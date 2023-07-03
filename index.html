@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Notifications on web and mobile</title>
+  <script type="module">
+    const regular = document.querySelector("#regular");
+    const mobile = document.querySelector("#mobile");
+
+    navigator.serviceWorker.register("empty.js");
+
+    regular.addEventListener("click", async () => {
+      try {
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") {
+          return;
+        }
+        const now = Date.now();
+        new Notification(`Web notification ${now}`, {
+          tag: now,
+        });
+      }
+      catch (e) {
+        console.error(e);
+        alert(e);
+      }
+    });
+
+    mobile.addEventListener("click", async () => {
+      try {
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") {
+          return;
+        }
+        const registration = await navigator.serviceWorker.ready;
+        const now = Date.now();
+        await registration.showNotification(`SW notification ${now}`, {
+          tag: now,
+        })
+      }
+      catch (e) {
+        console.error(e);
+        alert(e)
+      }
+    });
+  </script>
+</head>
+<body>
+<main>
+  <header>
+    Notifications on web and mobile
+  </header>
+  <article>
+    <button id="regular">Send a regular notification with Notification interface</button>
+    <br>
+    <br>
+    <button id="mobile">Send a mobile notification with serviceWorker and registration</button>
+    <p>Regular way of using Notification API to display a web notification may not work on mobile devices</p>
+  </article>
+</main>
+</body>
+</html>
